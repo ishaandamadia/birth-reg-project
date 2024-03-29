@@ -112,6 +112,7 @@ public class UserUtil {
         digit.web.models.Role roleBis = new digit.web.models.Role();
         roleBis.setName(role.getName());
         roleBis.setTenantId(role.getTenantId());
+        roleBis.setCode(role.getCode());
         userInfo.setRoles(Collections.singletonList(roleBis));
         userInfo.setType(userInfo.getType());
         userInfo.setUserName(mobileNumber);

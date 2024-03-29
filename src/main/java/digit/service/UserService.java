@@ -55,6 +55,11 @@ public class UserService {
                 .tenantId(father.getTenantId())
                 .type(father.getType())
                 .roles(father.getRoles())
+                .active(father.getActive())
+                .correspondenceAddress(father.getCorrespondenceAddress())
+                .permanentAddress(father.getPermanentAddress())
+                .gender(father.getGender())
+                .otpReference(father.getOtpReference())
                 .build();
         return user;
     }
@@ -69,6 +74,11 @@ public class UserService {
                 .tenantId(mother.getTenantId())
                 .type(mother.getType())
                 .roles(mother.getRoles())
+                .active(mother.getActive())
+                .correspondenceAddress(mother.getCorrespondenceAddress())
+                .permanentAddress(mother.getPermanentAddress())
+                .gender(mother.getGender())
+                .otpReference(mother.getOtpReference())
                 .build();
         return user;
     }
@@ -80,18 +90,18 @@ public class UserService {
 
         UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId), null, user.getMobileNumber());
 
-        //            if (!userDetailResponse.getUser().isEmpty()) {
-//                org.egov.common.contract.request.User userFromSearch = userDetailResponse.getUser().get(0);
-//                if (!user.getUserName().equalsIgnoreCase(userFromSearch.getUserName())) {
-//                    userServiceResponse = updateUser(requestInfo, user, userFromSearch);
-//                } else {
-//                    userServiceResponse = userFromSearch;
-//                }
-//            } else {
-//                userServiceResponse = createUser(requestInfo, tenantId, user);
-//            }
+        if (!userDetailResponse.getUser().isEmpty()) {
+            org.egov.common.contract.request.User userFromSearch = userDetailResponse.getUser().get(0);
+            if (!user.getUserName().equalsIgnoreCase(userFromSearch.getUserName()) && (!user.getMobileNumber().equalsIgnoreCase(userFromSearch.getUserName()))) {
+                userServiceResponse = updateUser(requestInfo, user, userFromSearch);
+            } else {
+                userServiceResponse = userFromSearch;
+            }
+        } else {
+            userServiceResponse = createUser(requestInfo, tenantId, user);
+        }
 
-        return userDetailResponse.getUser().get(0).getUuid();
+        return userServiceResponse.getUuid() ;
     }
 
 
@@ -168,10 +178,6 @@ public class UserService {
 
         StringBuilder uri = new StringBuilder(config.getUserHost()).append(config.getUserSearchEndpoint());
         UserDetailResponse userDetailResponse = userUtils.userCall(userSearchRequest, uri);
-
-        if (CollectionUtils.isEmpty(userDetailResponse.getUser())) {
-            throw new CustomException("USER_SEARCH_FAILED", "No user found.");
-        }
 
         return userDetailResponse;
     }

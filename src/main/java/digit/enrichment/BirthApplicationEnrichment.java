@@ -43,9 +43,6 @@ public class BirthApplicationEnrichment {
                 // Enrich UUID
                 application.setId(UUID.randomUUID().toString());
 
-                application.getFather().setUuid(application.getId());
-                application.getMother().setUuid(application.getId());
-
                 // Enrich registration Id
                 application.getAddress().setRegistrationId(application.getId());
 
@@ -102,18 +99,14 @@ public class BirthApplicationEnrichment {
         UserDetailResponse fatherUserResponse = userService.searchUser(userUtils.getStateLevelTenant(application.getTenantId()),application.getFather().getUuid() ,null);
         User fatherUser = fatherUserResponse.getUser().get(0);
         log.info(fatherUser.toString());
+        digit.web.models.User fatherObj = convertToNewUser(fatherUser);
         User fatherApplicant =
                 User.builder()
-//                .aadhaarNumber(fatherUser.getAadhaarNumber())
-//                .accountLocked(fatherUser.getAccountLocked())
-//                .active(fatherUser.getActive())
-//                .altContactNumber(fatherUser.getAltContactNumber())
-//                .bloodGroup(fatherUser.getBloodGroup())
-//                .correspondenceAddress(fatherUser.getCorrespondenceAddress())
-//                .correspondenceCity(fatherUser.getCorrespondenceCity())
-//                .correspondencePincode(fatherUser.getCorrespondencePincode())
-//                .gender(fatherUser.getGender())
                 .uuid(fatherUser.getUuid())
+                        .tenantId(fatherUser.getTenantId())
+                        .userName(fatherUser.getUserName())
+                        .mobileNumber(fatherUser.getMobileNumber())
+                        .emailId(fatherUser.getEmailId())
                 .name(fatherUser.getName())
                 .type(fatherUser.getType())
                 .roles(fatherUser.getRoles()).build();
@@ -125,16 +118,11 @@ public class BirthApplicationEnrichment {
         User motherUser = motherUserResponse.getUser().get(0);
         log.info(motherUser.toString());
         User motherApplicant = User.builder()
-//                .aadhaarNumber(motherUser.getAadhaarNumber())
-//                .accountLocked(motherUser.getAccountLocked())
-//                .active(motherUser.getActive())
-//                .altContactNumber(motherUser.getAltContactNumber())
-//                .bloodGroup(motherUser.getBloodGroup())
-//                .correspondenceAddress(motherUser.getCorrespondenceAddress())
-//                .correspondenceCity(motherUser.getCorrespondenceCity())
-//                .correspondencePincode(motherUser.getCorrespondencePincode())
-//                .gender(motherUser.getGender())
                 .uuid(motherUser.getUuid())
+                .tenantId(motherUser.getTenantId())
+                .userName(motherUser.getUserName())
+                .mobileNumber(motherUser.getMobileNumber())
+                .emailId(motherUser.getEmailId())
                 .name(motherUser.getName())
                 .type(motherUser.getType())
                 .roles(motherUser.getRoles()).build();
