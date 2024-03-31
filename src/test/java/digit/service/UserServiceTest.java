@@ -122,7 +122,7 @@ public class UserServiceTest {
         when(userUtils.userCall(any(), any())).thenReturn(userDetailResponse);
 
         // Invoke
-        org.egov.common.contract.request.User createdUser = userService.createUser(requestInfo, "tenantId", user);
+        User createdUser = userService.createUser(requestInfo, "tenantId", user);
 
         // Verify
         assertEquals(1, userDetailResponse.getUser().size());
@@ -132,7 +132,7 @@ public class UserServiceTest {
     public void testUpdateUser() {
         // Setup
         User user = new User();
-        org.egov.common.contract.request.User userFromSearch = new org.egov.common.contract.request.User();
+        User userFromSearch = new User();
         RequestInfo requestInfo = new RequestInfo();
 
         // Mock userCall response
@@ -140,7 +140,7 @@ public class UserServiceTest {
         when(userUtils.userCall(any(), any())).thenReturn(userDetailResponse);
 
         // Invoke
-        org.egov.common.contract.request.User updatedUser = userService.updateUser(requestInfo, user, userFromSearch);
+        User updatedUser = userService.updateUser(requestInfo, user, userFromSearch);
 
         // Verify
         assertEquals(1, userDetailResponse.getUser().size());
@@ -153,7 +153,7 @@ public class UserServiceTest {
         when(userUtils.userCall(any(), any())).thenReturn(userDetailResponse);
 
         // Invoke
-        UserDetailResponse result = userService.searchUser("stateLevelTenant", "accountId", "userName");
+        digit.web.models.UserDetailResponse result = userService.searchUser("stateLevelTenant", "accountId", "userName");
 
         // Verify
         assertEquals(userDetailResponse, result);

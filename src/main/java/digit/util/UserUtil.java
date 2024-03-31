@@ -7,7 +7,9 @@ import digit.models.coremodels.user.Role;
 import digit.models.coremodels.user.enums.UserType;
 import digit.repository.ServiceRequestRepository;
 import digit.models.coremodels.UserDetailResponse;
+import digit.web.models.JavaApplicant;
 import digit.web.models.User;
+import lombok.extern.slf4j.Slf4j;
 import org.egov.tracer.model.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Component
+@Slf4j
 public class UserUtil {
 
     @Autowired
@@ -41,6 +44,44 @@ public class UserUtil {
      * @param uri The address of the endpoint
      * @return Response from user service as parsed as userDetailResponse
      */
+//    public JavaApplicant userApplicantCall(Object userRequest, StringBuilder uri) {
+//        String dobFormat = null;
+//        if(uri.toString().contains(configs.getUserSearchEndpoint())  || uri.toString().contains(configs.getUserUpdateEndpoint()))
+//            dobFormat=DOB_FORMAT_Y_M_D;
+//        else if(uri.toString().contains(configs.getUserCreateEndpoint()))
+//            dobFormat = DOB_FORMAT_D_M_Y;
+//        try{
+//            LinkedHashMap responseMap = (LinkedHashMap)serviceRequestRepository.fetchResult(uri, userRequest);
+//            parseResponse(responseMap,dobFormat);
+//            JavaApplicant userResponse = mapper.convertValue(responseMap.get("user"),JavaApplicant.class);
+//            return userResponse;
+//        }
+//        catch(IllegalArgumentException  e)
+//        {
+//            throw new CustomException(ILLEGAL_ARGUMENT_EXCEPTION_CODE,OBJECTMAPPER_UNABLE_TO_CONVERT);
+//        }
+//    }
+
+    public digit.web.models.UserDetailResponse userCall1(Object userRequest, StringBuilder uri) {
+        String dobFormat = null;
+        if(uri.toString().contains(configs.getUserSearchEndpoint())  || uri.toString().contains(configs.getUserUpdateEndpoint()))
+            dobFormat=DOB_FORMAT_Y_M_D;
+        else if(uri.toString().contains(configs.getUserCreateEndpoint()))
+            dobFormat = DOB_FORMAT_D_M_Y;
+        try{
+            LinkedHashMap responseMap = (LinkedHashMap)serviceRequestRepository.fetchResult(uri, userRequest);
+            parseResponse(responseMap,dobFormat);
+            for (Object value : responseMap.values()) {
+                log.info("Response value: {}", value);
+            }
+            digit.web.models.UserDetailResponse userDetailResponse = mapper.convertValue(responseMap, digit.web.models.UserDetailResponse.class);
+            return userDetailResponse;
+        }
+        catch(IllegalArgumentException  e)
+        {
+            throw new CustomException(ILLEGAL_ARGUMENT_EXCEPTION_CODE,OBJECTMAPPER_UNABLE_TO_CONVERT);
+        }
+    }
 
     public UserDetailResponse userCall(Object userRequest, StringBuilder uri) {
         String dobFormat = null;

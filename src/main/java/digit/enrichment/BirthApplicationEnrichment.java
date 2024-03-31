@@ -1,13 +1,9 @@
 package digit.enrichment;
 
-import digit.models.coremodels.UserDetailResponse;
 import digit.service.UserService;
 import digit.util.IdgenUtil;
 import digit.util.UserUtil;
-import digit.web.models.AuditDetails;
-import digit.web.models.BirthRegistrationApplication;
-import digit.web.models.BirthRegistrationRequest;
-import digit.web.models.Role;
+import digit.web.models.*;
 import lombok.extern.slf4j.Slf4j;
 import org.egov.common.contract.request.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,13 +92,22 @@ public class BirthApplicationEnrichment {
         }
 
     public void enrichFatherApplicantOnSearch(BirthRegistrationApplication application) {
-        UserDetailResponse fatherUserResponse = userService.searchUser(userUtils.getStateLevelTenant(application.getTenantId()),application.getFather().getUuid() ,null);
-        User fatherUser = fatherUserResponse.getUser().get(0);
+        digit.web.models.UserDetailResponse fatherUserResponse = userService.searchUser(userUtils.getStateLevelTenant(application.getTenantId()),application.getFather().getUuid() ,null);
+        digit.web.models.User fatherUser = fatherUserResponse.getUser().get(0);
         log.info(fatherUser.toString());
-        digit.web.models.User fatherObj = convertToNewUser(fatherUser);
-        User fatherApplicant =
-                User.builder()
+//        digit.web.models.User fatherObj = convertToNewUser(fatherUser);
+        digit.web.models.User fatherApplicant =
+                digit.web.models.User.builder()
                 .uuid(fatherUser.getUuid())
+                        .aadhaarNumber(fatherUser.getAadhaarNumber())
+                        .accountLocked(fatherUser.getAccountLocked())
+                        .active(fatherUser.getActive())
+                        .altContactNumber(fatherUser.getAltContactNumber())
+                        .bloodGroup(fatherUser.getBloodGroup())
+                        .correspondenceAddress(fatherUser.getCorrespondenceAddress())
+                        .correspondenceCity(fatherUser.getCorrespondenceCity())
+                        .correspondencePincode(fatherUser.getCorrespondencePincode())
+                        .gender(fatherUser.getGender())
                         .tenantId(fatherUser.getTenantId())
                         .userName(fatherUser.getUserName())
                         .mobileNumber(fatherUser.getMobileNumber())
@@ -110,22 +115,34 @@ public class BirthApplicationEnrichment {
                 .name(fatherUser.getName())
                 .type(fatherUser.getType())
                 .roles(fatherUser.getRoles()).build();
-        application.setFather(convertToNewUser(fatherApplicant));
+        application.setFather(fatherApplicant);
+
+//        application.setFather(convertToNewUser(fatherApplicant));
     }
 
     public void enrichMotherApplicantOnSearch(BirthRegistrationApplication application) {
         UserDetailResponse motherUserResponse = userService.searchUser(userUtils.getStateLevelTenant(application.getTenantId()),application.getMother().getUuid().toString(),null);
-        User motherUser = motherUserResponse.getUser().get(0);
+        digit.web.models.User motherUser = motherUserResponse.getUser().get(0);
         log.info(motherUser.toString());
-        User motherApplicant = User.builder()
+        digit.web.models.User motherApplicant = digit.web.models.User.builder()
                 .uuid(motherUser.getUuid())
                 .tenantId(motherUser.getTenantId())
+                .aadhaarNumber(motherUser.getAadhaarNumber())
+                .accountLocked(motherUser.getAccountLocked())
+                .active(motherUser.getActive())
+                .altContactNumber(motherUser.getAltContactNumber())
+                .bloodGroup(motherUser.getBloodGroup())
+                .correspondenceAddress(motherUser.getCorrespondenceAddress())
+                .correspondenceCity(motherUser.getCorrespondenceCity())
+                .correspondencePincode(motherUser.getCorrespondencePincode())
+                .gender(motherUser.getGender())
                 .userName(motherUser.getUserName())
                 .mobileNumber(motherUser.getMobileNumber())
                 .emailId(motherUser.getEmailId())
                 .name(motherUser.getName())
                 .type(motherUser.getType())
                 .roles(motherUser.getRoles()).build();
-        application.setMother(convertToNewUser(motherApplicant));
+        application.setMother(motherApplicant);
+//        application.setMother(convertToNewUser(motherApplicant));
     }
 }

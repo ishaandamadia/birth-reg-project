@@ -1,7 +1,6 @@
 package digit.service;
 
 import digit.config.BTRConfiguration;
-import digit.models.coremodels.UserDetailResponse;
 import digit.util.UserUtil;
 import digit.web.models.*;
 import lombok.extern.slf4j.Slf4j;
@@ -85,13 +84,13 @@ public class UserService {
 
     String upsertUser(User user, RequestInfo requestInfo) {
         String tenantId = user.getTenantId();
-        org.egov.common.contract.request.User userServiceResponse = null;
+        User userServiceResponse = null;
 
 
         UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId), null, user.getMobileNumber());
 
         if (!userDetailResponse.getUser().isEmpty()) {
-            org.egov.common.contract.request.User userFromSearch = userDetailResponse.getUser().get(0);
+            User userFromSearch = userDetailResponse.getUser().get(0);
             if (!user.getUserName().equalsIgnoreCase(userFromSearch.getUserName()) && (!user.getMobileNumber().equalsIgnoreCase(userFromSearch.getUserName()))) {
                 userServiceResponse = updateUser(requestInfo, user, userFromSearch);
             } else {
@@ -114,24 +113,24 @@ public class UserService {
 
     private void enrichParentUser(User parent, String tenantId) {
         String accountId = parent.getId() + "";
-        UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId), accountId, null);
+        digit.web.models.UserDetailResponse userDetailResponse = searchUser(userUtils.getStateLevelTenant(tenantId), accountId, null);
 
         if (CollectionUtils.isEmpty(userDetailResponse.getUser())) {
             throw new CustomException("INVALID_ACCOUNTID", "No user exists for the given accountId: " + accountId);
         }
 
-        org.egov.common.contract.request.User userFromSearch = userDetailResponse.getUser().get(0);
+        User userFromSearch = userDetailResponse.getUser().get(0);
         parent.setId(Integer.valueOf(userFromSearch.getUuid()));
     }
 
-    org.egov.common.contract.request.User createUser(RequestInfo requestInfo, String tenantId, User userInfo) {
+    User createUser(RequestInfo requestInfo, String tenantId, User userInfo) {
         userUtils.addUserDefaultFields(userInfo.getMobileNumber(),tenantId, userInfo);
         StringBuilder uri = new StringBuilder(config.getUserHost())
                 .append(config.getUserContextPath())
                 .append(config.getUserCreateEndpoint());
 
         CreateUserRequest user = new CreateUserRequest(requestInfo, userInfo);
-        UserDetailResponse userDetailResponse = userUtils.userCall(user, uri);
+        digit.web.models.UserDetailResponse userDetailResponse = userUtils.userCall1(user, uri);
 
         if (CollectionUtils.isEmpty(userDetailResponse.getUser())) {
             throw new CustomException("USER_CREATION_FAILED", "Failed to create user.");
@@ -140,7 +139,7 @@ public class UserService {
         return userDetailResponse.getUser().get(0);
     }
 
-    org.egov.common.contract.request.User updateUser(RequestInfo requestInfo, User user, org.egov.common.contract.request.User userFromSearch) {
+    User updateUser(RequestInfo requestInfo, User user,User userFromSearch) {
         User userBis = new User();
         userBis.setName(user.getName());
         userBis.setActive(true);
@@ -149,7 +148,7 @@ public class UserService {
                 .append(config.getUserContextPath())
                 .append(config.getUserUpdateEndpoint());
 
-        UserDetailResponse userDetailResponse = userUtils.userCall(new CreateUserRequest(requestInfo, userBis), uri);
+        digit.web.models.UserDetailResponse userDetailResponse = userUtils.userCall1(new CreateUserRequest(requestInfo, userBis), uri);
 
         if (CollectionUtils.isEmpty(userDetailResponse.getUser())) {
             throw new CustomException("USER_UPDATE_FAILED", "Failed to update user.");
@@ -158,7 +157,7 @@ public class UserService {
         return userDetailResponse.getUser().get(0);
     }
 
-    public UserDetailResponse searchUser(String stateLevelTenant, String accountId, String userName){
+    public digit.web.models.UserDetailResponse searchUser(String stateLevelTenant, String accountId, String userName){
         UserSearchRequest userSearchRequest = new UserSearchRequest();
         userSearchRequest.setActive(true);
         userSearchRequest.setUserType("CITIZEN");
@@ -177,7 +176,7 @@ public class UserService {
         }
 
         StringBuilder uri = new StringBuilder(config.getUserHost()).append(config.getUserSearchEndpoint());
-        UserDetailResponse userDetailResponse = userUtils.userCall(userSearchRequest, uri);
+        digit.web.models.UserDetailResponse userDetailResponse = userUtils.userCall1(userSearchRequest, uri);
 
         return userDetailResponse;
     }

@@ -70,7 +70,7 @@ public class User   {
 
                 private String gender = null;
 
-        @JsonProperty("alternateMobileNumber")
+        @JsonProperty("alternatemobilenumber")
 
                 private String alternateMobileNumber = null;
 
@@ -102,7 +102,7 @@ public class User   {
 
         @Size(max=50)         private String correspondenceCity = null;
 
-        @JsonProperty("correspondencePincode")
+        @JsonProperty("correspondencePinCode")
 
         @Size(max=6)         private String correspondencePincode = null;
 
